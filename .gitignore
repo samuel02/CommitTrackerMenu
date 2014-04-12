@@ -1,0 +1,14 @@
+.repl_history
+build
+tags
+.DS_Store
+*.swp
+*.swo
+resources/*.nib
+resources/*.momd
+resources/*.storyboardc
+.DS_Store
+*.o
+*.a
+.dat*
+*.xcodeproj
