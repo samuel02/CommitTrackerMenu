@@ -1,8 +1,10 @@
 class AppDelegate
   SCROLL_VIEW_INSET = 3
+  BUTTON_WIDTH = 100
+  BUTTON_HEIGHT = 30
+
   attr_accessor :status_menu
-  CONFIG = YAML::load(NSMutableData.dataWithContentsOfURL(
-    NSBundle.mainBundle.URLForResource("config", withExtension: "yml")).to_s)
+  CONFIG = YAML::load(NSMutableData.dataWithContentsOfURL(NSBundle.mainBundle.URLForResource("config", withExtension: "yml")).to_s)
 
   def applicationDidFinishLaunching(notification)
     @app_name = NSBundle.mainBundle.infoDictionary['CFBundleDisplayName']
@@ -43,7 +45,7 @@ class AppDelegate
     @window = PopupPanel.alloc.initPopup
 
     scroll_view = NSScrollView.alloc.initWithFrame(NSInsetRect(@window.contentView.frame,
-      PopupBackground::LINE_THICKNESS + SCROLL_VIEW_INSET, PopupBackground::ARROW_HEIGHT + SCROLL_VIEW_INSET))
+      PopupBackground::LINE_THICKNESS + SCROLL_VIEW_INSET, PopupBackground::ARROW_HEIGHT + SCROLL_VIEW_INSET + (BUTTON_HEIGHT / 2)))
     scroll_view.hasVerticalScroller = true
     @window.contentView.addSubview(scroll_view)
 
@@ -51,6 +53,18 @@ class AppDelegate
     @collection_view.setItemPrototype(CommitPrototype.new)
 
     scroll_view.documentView = @collection_view
+
+    @options_button = NSButton.alloc.initWithFrame(NSMakeRect(PopupPanel::POPUP_WIDTH - BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT))
+    @options_button.setTitle("Options")
+    @options_button.setButtonType(NSMomentaryLightButton)
+    @options_button.setBezelStyle(NSRoundedBezelStyle)
+    @options_button.setTarget(self)
+    @options_button.setAction('showMenu:')
+    @window.contentView.addSubview(@options_button)
+  end
+
+  def showMenu(sender)
+    NSMenu.popUpContextMenu(@status_menu, withEvent: NSApp.currentEvent, forView: sender)
   end
 
   def createMenuItem(name, action)
