@@ -26,6 +26,8 @@ class AppDelegate
     @github = GitHub.new(CONFIG[:github_token]) do
       self.checkForNewEvents
     end
+
+    NSUserNotificationCenter.defaultUserNotificationCenter.setDelegate(self)
   end
 
   def createMenuItem(name, action)
@@ -70,8 +72,10 @@ class AppDelegate
             end
           end
 
-          @unseen += (@commits - @last_commits).length
+          new_commits = (@commits - @last_commits).length
+          @unseen += new_commits
           self.showUnseenCommits
+          self.showNotification(new_commits)
         end
 
         @http_state.title = "Ready"
@@ -98,5 +102,19 @@ class AppDelegate
 
   def pressEvent(item)
     NSWorkspace.sharedWorkspace.openURL(NSURL.URLWithString(@urls[item.tag]))
+  end
+
+  def showNotification(new_commits)
+    return unless new_commits > 0
+    notification = NSUserNotification.alloc.init
+    notification.title = "New commits"
+    notification.informativeText = "There are #{new_commits} new commits."
+    notification.soundName = NSUserNotificationDefaultSoundName
+    NSUserNotificationCenter.defaultUserNotificationCenter.scheduleNotification(notification)
+  end
+
+  def userNotificationCenter(center, didActivateNotification: notification)
+    @status_item.popUpStatusItemMenu(@status_menu)
+    center.removeDeliveredNotification(notification)
   end
 end
