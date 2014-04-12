@@ -16,9 +16,11 @@ class AppDelegate
     @status_item.setTitle(@app_name)
 
     @http_state = createMenuItem("Loading...", '')
+    @status_menu.addItem NSMenuItem.separatorItem
     @http_state.enabled = false
     @status_menu.addItem @http_state
 
+    @status_menu.addItem NSMenuItem.separatorItem
     @status_menu.addItem createMenuItem("About #{@app_name}", 'orderFrontStandardAboutPanel:')
     @status_menu.addItem createMenuItem("Quit", 'terminate:')
 
@@ -66,7 +68,7 @@ class AppDelegate
               item = self.createMenuItem("[#{actor}: #{repo} - #{message}", "pressEvent:")
               item.tag = counter
               @events << item
-              @status_menu.insertItem(item, atIndex: 1)
+              @status_menu.insertItem(item, atIndex: 0)
               counter += 1
               @commits << commit['sha']
             end
