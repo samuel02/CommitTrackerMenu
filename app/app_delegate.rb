@@ -7,13 +7,17 @@ class AppDelegate
   def applicationDidFinishLaunching(notification)
     @app_name = NSBundle.mainBundle.infoDictionary['CFBundleDisplayName']
 
+    @window = PopupPanel.alloc.initPopup
+
     @status_menu = NSMenu.new
     @status_menu.delegate = self
 
     @status_item = NSStatusBar.systemStatusBar.statusItemWithLength(NSVariableStatusItemLength).init
-    @status_item.setMenu(@status_menu)
     @status_item.setHighlightMode(true)
     @status_item.setTitle(@app_name)
+
+    @status_item.setTarget(self)
+    @status_item.setAction('showHide:')
 
     @http_state = createMenuItem("Loading...", '')
     @status_menu.addItem NSMenuItem.separatorItem
@@ -118,5 +122,11 @@ class AppDelegate
   def userNotificationCenter(center, didActivateNotification: notification)
     @status_item.popUpStatusItemMenu(@status_menu)
     center.removeDeliveredNotification(notification)
+  end
+
+  def showHide(sender)
+    @unseen = 0
+    self.showUnseenCommits
+    @window.showHide(sender)
   end
 end
